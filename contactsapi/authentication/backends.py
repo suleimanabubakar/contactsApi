@@ -12,23 +12,20 @@ class JWTAuthentication(authentication.BaseAuthentication):
         if not auth_data:
             return None
 
-        # print(auth_data.decode('utf-8'))
+        print(auth_data.decode('utf-8'))
         prefix, token = auth_data.decode('utf-8').split(' ')
-        # print(jwt.decode(token, settings.JWT_SECRET_KEY))
+        # print(jwt.decode(token, 'Whyme',verify=false))
 
-        # try:
-        payload = jwt.decode(token, 'None')
-        print(payload)
-
-
-            # user = User.objects.get(username=payload['username'])
-            # return (user, token)
-
-        # except jwt.DecodeError as identifier:
-        #     raise exceptions.AuthenticationFailed(
-        #         'Your token is invalid,logins')
-        # except jwt.ExpiredSignatureError as identifier:
-        #     raise exceptions.AuthenticationFailed(
-        #         'Your token is expired,login')
+        try:
+            payload = jwt.decode(token, 'Whyme',algorithms=["HS256"])
+            print(payload)
+            user = User.objects.get(username=payload['username'])
+            return (user, token)
+        except jwt.DecodeError as identifier:
+            raise exceptions.AuthenticationFailed(
+                'Your token is invalid,logins')
+        except jwt.ExpiredSignatureError as identifier:
+            raise exceptions.AuthenticationFailed(
+                'Your token is expired,login')
 
         return super().authenticate(request)
